@@ -1,4 +1,5 @@
-# Delilah Restó - Plataforma de manejo de pedidos de un restaurant
+# Delilah Restó
+##Plataforma de manejo de pedidos de un restaurant
 
 3er proyecto del curso de Desarrollo Web Full Stack de Acámica.
 
