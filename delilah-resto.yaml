@@ -9,8 +9,7 @@ info:
 externalDocs:
   description: Find out more about Delilah Resto
   url: 'https://github.com/delfinacamacho/delilah-resto'
-servers:
-  - url: 'https://localhost:3000/'
+
 
 tags:
   - name: Products
@@ -38,7 +37,7 @@ paths:
           description: "Product object that needs to be added to the store."
           required: true
           schema:
-              $ref: '#/components/schemas/Product'
+              $ref: '#/definitions/Product'
       responses:
         '200':
           description: "Product added succesfully."
@@ -66,7 +65,7 @@ paths:
           schema:
             type: "array"
             items:
-                $ref: '#/components/schemas/Product'
+                $ref: '#/definitions/Product'
 
   /products/:id:
     get:
@@ -92,7 +91,7 @@ paths:
           description: "Successful operation."
           schema:
             items:
-                $ref: '#/components/schemas/Product'
+                $ref: '#/definitions/Product'
         '404':
           description: "Product not found."
           
@@ -119,7 +118,7 @@ paths:
           description: "Product object that needs to be updated in the store."
           required: true
           schema:
-              $ref: '#/components/schemas/Product'
+              $ref: '#/definitions/Product'
 
       responses:
         '200':
@@ -161,7 +160,7 @@ paths:
           description: "Created user object."
           required: true
           schema:
-            $ref: "#/components/schemas/User"
+            $ref: "#/definitions/User"
 
       responses:
         '200':
@@ -224,7 +223,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/components/schemas/User"
+              $ref: "#/definitions/User"
 
   /users/:username:
     get:
@@ -249,7 +248,7 @@ paths:
           description: "Successful operation."
           schema:
             items:
-                $ref: '#/components/schemas/User'
+                $ref: '#/definitions/User'
         '404':
           description: "User not found."
 
@@ -270,7 +269,7 @@ paths:
           description: "Order object that needs to be created."
           required: true
           schema:
-              $ref: '#/components/schemas/Order'
+              $ref: '#/definitions/Order'
       responses:
         '200':
           description: "Order added succesfully."
@@ -296,7 +295,7 @@ paths:
           schema:
             type: "array"
             items:
-                $ref: '#/components/schemas/Order' 
+                $ref: '#/definitions/Order' 
                 
   /orders/:id:
     get:
@@ -322,7 +321,7 @@ paths:
           description: "Successful operation."
           schema:
             items:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/definitions/Order'
         '404':
           description: "Order not found."
     
@@ -357,8 +356,8 @@ paths:
         '200':
           description: "Order updated successfully."
 
-components:
-  schemas:
+definitions:
+
     Product:
       type: object
       properties:
