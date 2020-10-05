@@ -1,0 +1,444 @@
+swagger: "2.0"
+info:
+  title: Delilah Resto
+  description: "This document contains the specifications to use Delilah Resto, an API for a restaurant's delivery system."
+  termsOfService: 'https://github.com/delfinacamacho/delilah-resto'
+  contact:
+    email: camachodelfina@gmail.com
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Delilah Resto
+  url: 'https://github.com/delfinacamacho/delilah-resto'
+servers:
+  - url: 'https://localhost:3000/'
+
+tags:
+  - name: Products
+    description: "Contains every product available in the store."
+  - name: Users
+    description: "Allows operations concerning users."
+  - name: Orders
+    description: "Contains details of every order and allows operations concerning them."
+
+paths:
+  /products:
+    post:
+      tags:
+        - Products
+      summary: "Adds a new product to the store"
+      operationId: "addProduct"
+      parameters:
+        - in: "header"
+          name: "Administrator token"
+          description: "Authentication Token"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Product object that needs to be added to the store."
+          required: true
+          schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: "Product added succesfully."
+        '400':
+          description: "Invalid input."
+        '500':
+          description: "Error creating product."
+     
+          
+    get:
+      tags:
+        - Products
+      summary: "Gets a list of all available products."
+      description: "Gets all products in inventory."
+      operationId: "getProducts"
+      parameters:
+        - in: "header"
+          name: "Loged user token"
+          description: "Authentication Token"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+                $ref: '#/components/schemas/Product'
+
+  /products/:id:
+    get:
+      tags:
+        - Products
+      summary: "Find a product by ID"
+      description: "Returns a single product"
+      operationId: "getProductById"
+      parameters:
+        - in: "header"
+          name: "Loged user token"
+          description: "Authentication Token"
+          required: true
+          type: "string"
+        - in: "query"
+          name: "id"
+          description: "ID of product to return"
+          required: true
+          type: "integer"
+
+      responses:
+        '200':
+          description: "Successful operation."
+          schema:
+            items:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: "Product not found."
+          
+
+    put:
+      tags:
+        - Products
+      summary: "Updates a product by ID"
+      description:  "Updates an existing product"
+      operationId: "updateProductById"
+      parameters:
+        - in: "header"
+          name: "Administrator token"
+          description: "Authentication Token"
+          required: true
+          type: "string"
+        - in: "query"
+          name: "id"
+          description: "ID of product to update"
+          required: true
+          type: "integer"
+        - in: "body"
+          name: "body"
+          description: "Product object that needs to be updated in the store."
+          required: true
+          schema:
+              $ref: '#/components/schemas/Product'
+
+      responses:
+        '200':
+          description: "Product updated successfully."
+
+
+    delete:
+      tags:
+        - Products
+      summary: "Delete a product by ID"
+      description: "Find a product by ID and deletes it"
+      operationId: "deleteProductById"
+      parameters:
+      - in: "header"
+        name: "Administrator token"
+        description: "Authentication Token"
+        required: true
+        type: "string"
+      - in: "query"
+        name: "id"
+        description: "ID of product to delete"
+        required: true
+        type: "integer"
+          
+      responses:
+        200:
+          description: "Product deleted successfully."
+
+  /signup:
+    post:
+      tags:
+        - Users
+      summary: "Creates a user"
+      description: "Creates a new User in the DataBase."
+      operationId: "registerUser"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Created user object."
+          required: true
+          schema:
+            $ref: "#/components/schemas/User"
+
+      responses:
+        '200':
+          description: "User correctly added to database."
+        '400':
+          description: "Error validating input data."
+        '409':
+          description: "Username already exists, please choose another."
+  
+  /auth/login:
+    post:
+      tags:
+        - Users
+      summary: ""
+      description: ""
+      operationId: ""
+      parameters:
+        - in: "body"
+          name: "credentials"
+          description: "The username and password for login"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              username:
+                type: "string"
+              password:
+                type: "string"
+      responses:
+        '200':
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              username:
+                type: "string"
+                example: "username"
+              token:
+                type: "string"
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJeyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfSflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        '400':
+          description: "Invalid Username / Wrong password supplied"
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: "Gets a list of all users."
+      description: "Gets a list of all the existing users in the dataBase."
+      operationId: "getAllUsers"
+      parameters:
+        - in: "header"
+          name: "Administrator token"
+          description: "Authentication Token"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/components/schemas/User"
+
+  /users/:username:
+    get:
+      tags:
+        - Users
+      summary: "Find a user by username"
+      description: "Returns a single user"
+      operationId: "getUserByUsername"
+      parameters:
+        - in: "header"
+          name: "Loged user token"
+          description: "Authentication Token"
+          required: true
+          type: "string"
+        - in: "query"
+          name: "username"
+          description: "Username of user to return"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "Successful operation."
+          schema:
+            items:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: "User not found."
+
+  /orders:
+    post:
+      tags:
+        - Orders
+      summary: "Lets user create a new order"
+      operationId: "createNewOrder"
+      parameters:
+        - in: "header"
+          name: "Loged user token"
+          description: "Authentication Token"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Order object that needs to be created."
+          required: true
+          schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: "Order added succesfully."
+        '400':
+          description: "Invalid input."
+        '500':
+          description: "Error creating order."
+
+    get:
+      tags:
+        - Orders
+      summary: "Gets a list of all orders."
+      operationId: "getOrders"
+      parameters:
+        - in: "header"
+          name: "Administrator token"
+          description: "Authentication Token"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+                $ref: '#/components/schemas/Order' 
+                
+  /orders/:id:
+    get:
+      tags:
+        - Orders
+      summary: "Find an order by ID"
+      description: "Returns a single order"
+      operationId: "getOrderById"
+      parameters:
+        - in: "header"
+          name: "Administrator token"
+          description: "Authentication Token"
+          required: true
+          type: "string"
+        - in: "query"
+          name: "id"
+          description: "ID of product to return"
+          required: true
+          type: "integer"
+
+      responses:
+        '200':
+          description: "Successful operation."
+          schema:
+            items:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: "Order not found."
+    
+    put:
+      tags:
+        - Orders
+      summary: "Updates an order by ID"
+      description:  "Updates order status"
+      operationId: "updateOrderById"
+      parameters:
+        - in: "header"
+          name: "Administrator token"
+          description: "Authentication Token"
+          required: true
+          type: "string"
+        - in: "query"
+          name: "id"
+          description: "ID of order to update"
+          required: true
+          type: "integer"
+        - in: "body"
+          name: "body"
+          description: "ID of reference for order status change"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              status_id:
+                type: "integer"
+                example: "2"
+      responses:
+        '200':
+          description: "Order updated successfully."
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Salmon Bagel
+        price:
+          type: number
+          example: 365
+        price_discount:
+          type: number
+          example: 255.5
+        img_url:
+          type: string
+          example: 'https://via.placeholder.com/150'
+        description:
+          type: string
+          example: 
+            These Smoked Salmon Bagels are loaded with a homemade herb cream
+            cheese, avocado and capers.
+        is_active:
+          type: boolean
+          example: 1
+        
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: delfinacamacho
+        name:
+          type: string
+          example: Delfina Camacho
+        email:
+          type: string
+          example: delfina@mail.com
+        phone:
+          type: string
+          example: +11 777 7777 
+        address:
+          type: string
+          example: Falsy Street 1234 
+        password:
+          type: string
+          example: helloworld123
+        role_id:
+          type: integer
+          example: 1
+
+    Order:
+      type: object
+      properties:
+        order_id:
+          type: integer
+          example: 1
+        status:
+          type: string
+          example: new
+        created_at:
+          type: string
+          example: "2020-10-04T03:43:20.000Z"
+        product_name:
+          type: string
+          example: Salmon Bagle
+        payment_method:
+          type: string
+          example: cash 
+        product_quantity:
+          type: integer
+          example: 2 
+        user_name:
+          type: string
+          example: Delfina Camacho
+        address:
+          type: string
+          example: Falsy Street 1234 
+
