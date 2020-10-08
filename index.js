@@ -55,8 +55,8 @@ server.get('/products/:id', authMiddleware, async (req, res) => {
         const data = await sequelize.query(query, { type: sequelize.QueryTypes.SELECT },
         )
         if (data[0]) {
-            res.send(data[0]);
             console.log(data[0]);
+            return res.send(data[0]);
         }
         res.status(404).send('Producto no encontrado.'); 
 } catch(err) {
@@ -162,8 +162,8 @@ server.get('/users/:username', authMiddleware, checkUsername, async (req, res) =
         const query = `SELECT * FROM users WHERE username = '${req.params.username}'`;
         const data = await sequelize.query(query, { type: sequelize.QueryTypes.SELECT })
         if (data[0]) {
-            res.send(data[0]);
             console.log(data[0]);
+            return res.send(data[0]);
         }
         res.status(404).send('Usuario no encontrado.'); 
 } catch(err) {
@@ -185,28 +185,36 @@ server.get('/users', authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 /*----------------ORDERS----------------*/
+
 //CREATE a Order
 server.post('/orders', authMiddleware, async (req, res) => {
-    const { user_id, payment_method_id, product_id, product_quantity } = req.body;
     try {
-        await sequelize.query(
-        `INSERT into orders ( user_id, payment_method_id )
-        VALUES ( ?, ? )`
-        , { replacements: [ user_id, payment_method_id ] }
-        );   
+        const user = Object.values(req.body[0])[0];
+        const paymentMethod = Object.values(req.body[1])[0];  
+        await sequelize.query(`
+            INSERT INTO orders
+            (user_id, payment_method_id)
+            VALUES 
+            (?, ?)`
+            , {replacements: [paymentMethod, user]});           
 
-        const orderIdObj = await sequelize.query(
+        const data = await sequelize.query(
             'SELECT MAX(id) FROM orders',
             { type: sequelize.QueryTypes.SELECT });
 
-        const orderId = Object.values(orderIdObj[0])[0];
+        const orderId = Object.values(data[0])[0];
 
-        await sequelize.query(
-            `INSERT INTO order_products ( order_id, product_id, product_quantity) VALUES ( ?, ?, ? )`
-            , { replacements: [ orderId, product_id, product_quantity] }
+        async function insertProducts(product, i, array) {
+            await sequelize.query(`
+                INSERT INTO order_products
+                (order_id, product_id)
+                VALUES 
+                (?, ?)`,
+                {replacements: [orderId, product.product_id]}
             );
-            res.status(200).send('Registro de orden exitoso.');
-
+        };
+        req.body.forEach(insertProducts);
+        res.status(200).send('Registro de orden exitoso.');
 
     } catch(err) {
         console.log(err); 
@@ -216,15 +224,14 @@ server.post('/orders', authMiddleware, async (req, res) => {
 //READ all active Orders
 server.get('/orders', authMiddleware, adminMiddleware, async (req, res) => {
     try {
-        const query = `SELECT order_status.status, orders.created_at, orders.id order_id, products.name product_name, order_products.product_quantity, payment_methods.name payment_method, users.name user_name, users.address
+        const query = `SELECT order_status.status, orders.created_at, orders.id order_id, products.name product_name, payment_methods.name payment_method, users.name user_name, users.address
         FROM orders
         JOIN users ON user_id = users.id
         JOIN payment_methods ON payment_method_id = payment_methods.id
         JOIN order_status ON status_id = order_status.id
         JOIN order_products ON orders.id = order_products.order_id
         JOIN products ON order_products.product_id = products.id`;
-        const data = await sequelize.query(query, { type: sequelize.QueryTypes.SELECT },
-        )
+        const data = await sequelize.query(query, { type: sequelize.QueryTypes.SELECT });
         res.send(data);
         console.log(data);
     } catch(err) {
@@ -235,7 +242,7 @@ server.get('/orders', authMiddleware, adminMiddleware, async (req, res) => {
 //READ Order by ID
 server.get('/orders/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
-        const query = `SELECT order_status.status, orders.created_at, orders.id order_id, products.name product_name, order_products.product_quantity, payment_methods.name payment_method, users.name user_name, users.address
+        const query = `SELECT order_status.status, orders.created_at, orders.id order_id, products.name product_name, payment_methods.name payment_method, users.name user_name, users.address
         FROM orders
         JOIN users ON user_id = users.id
         JOIN payment_methods ON payment_method_id = payment_methods.id
@@ -243,11 +250,10 @@ server.get('/orders/:id', authMiddleware, adminMiddleware, async (req, res) => {
         JOIN order_products ON orders.id = order_products.order_id
         JOIN products ON order_products.product_id = products.id
         WHERE orders.id = ${req.params.id}`;
-        const data = await sequelize.query(query, { type: sequelize.QueryTypes.SELECT },
-        )
-        if (data[0]) {
-            res.send(data[0]);
-            console.log(data[0]);
+        const data = await sequelize.query(query, { type: sequelize.QueryTypes.SELECT });
+        if (data) {
+            console.log(data);
+            return res.send(data);
         }
         res.status(404).send('Orden no encontrada.'); 
     } catch(err) {
@@ -271,3 +277,13 @@ server.put('/orders/:id', authMiddleware, adminMiddleware, async (req, res) => {
     }
 });
 
+//DELETE an Order by ID
+server.delete('/orders/:id', authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+        const query = `DELETE from orders WHERE id = ${req.params.id}`
+        await sequelize.query(query, { replacements: { id: parseInt(req.params.id)} });
+        res.status(200).send('Orden borrada.');
+    } catch(err) {
+    console.log(err); 
+    }
+});
