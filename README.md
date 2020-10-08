@@ -52,4 +52,4 @@ Desde la consola ejecutar `nodemon index.js`.
 
 Probar el funcionamiento de los endpoints mediante Postman.
 
-[Colección de requests en Postman](https://www.getpostman.com/collections/f4016b606cb16cd7cd8f)
+[Colección de requests en Postman](https://www.getpostman.com/collections/d7efc3c2aa51b4903c16)
