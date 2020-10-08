@@ -281,8 +281,8 @@ paths:
                   type: integer
             example:
               - user_id: 2
-                payment_method_id: 1
-                product_id: 3
+              - payment_method_id: 1
+              - product_id: 3
 
       responses:
         '200':
