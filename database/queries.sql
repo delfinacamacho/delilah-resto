@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-10-2020 a las 04:28:50
+-- Tiempo de generación: 08-10-2020 a las 12:26:24
 -- Versión del servidor: 10.4.14-MariaDB
 -- Versión de PHP: 7.4.9
 
@@ -44,8 +44,7 @@ CREATE TABLE `orders` (
 CREATE TABLE `order_products` (
   `id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
-  `product_quantity` int(11) NOT NULL DEFAULT 1
+  `product_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -113,9 +112,7 @@ CREATE TABLE `products` (
 
 INSERT INTO `products` (`id`, `name`, `description`, `img_url`, `price`, `price_discount`, `is_active`) VALUES
 (1, 'Salmon Bagel', 'This Smoked Salmon Bagel is loaded with a homemade herb cream cheese, avocado and capers.', 'https://via.placeholder.com/150', 425, 400, 1),
-(2, 'Veggie Avocado', 'A delicious Avocado Sandwich piled high with fresh veggies, sprouts, and creamy mashed avocado.', 'https://via.placeholder.com/150', 310, 0, 1),
-(3, 'Classic Burger', 'A Classic Burger with a juicy beef patty, lettuce, tomato, onions and pickles on a Brioche bun.', 'https://via.placeholder.com/150', 350, 0, 1),
-(4, 'Focaccia', 'Our focaccia has a moist but airy crumb sandwiched between thin but ultra-crunchy top and bottom crusts, thanks to a generous amount of olive oil.', 'https://via.placeholder.com/150', 300, 0, 1);
+(2, 'Veggie Avocado', 'A delicious Avocado Sandwich piled high with fresh veggies, sprouts, and creamy mashed avocado.', 'https://via.placeholder.com/150', 310, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -140,7 +137,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `address`, `password`, `role_id`) VALUES
 (1, 'administradordeprueba', 'Usuario Administrador', 'admin@mail.com', '112225555', 'Street 123, City', '12345', 1),
-(2, 'usuario de prueba', 'Usuario de prueba', 'usuario@mail.com', '113338888', 'Street 1234, City', '12345', 2);
+(2, 'usuariodeprueba', 'Usuario de prueba', 'usuario@mail.com', '113338888', 'Street 1234, City', '12345', 2);
 
 -- --------------------------------------------------------
 
@@ -170,17 +167,17 @@ INSERT INTO `user_roles` (`id`, `role`) VALUES
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id_fk` (`user_id`),
+  ADD KEY `order_status_id_fk` (`status_id`),
   ADD KEY `payment_methods_id_fk` (`payment_method_id`),
-  ADD KEY `order_status_id_fk` (`status_id`);
+  ADD KEY `user_id_fk` (`user_id`);
 
 --
 -- Indices de la tabla `order_products`
 --
 ALTER TABLE `order_products`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`),
-  ADD KEY `product_id` (`product_id`);
+  ADD KEY `order_products_ibfk_2` (`product_id`),
+  ADD KEY `order_products_ibfk_1` (`order_id`);
 
 --
 -- Indices de la tabla `order_status`
@@ -224,13 +221,13 @@ ALTER TABLE `user_roles`
 -- AUTO_INCREMENT de la tabla `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `order_products`
 --
 ALTER TABLE `order_products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `order_status`
@@ -254,7 +251,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `user_roles`
@@ -270,16 +267,16 @@ ALTER TABLE `user_roles`
 -- Filtros para la tabla `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `order_status_id_fk` FOREIGN KEY (`status_id`) REFERENCES `order_status` (`id`),
-  ADD CONSTRAINT `payment_methods_id_fk` FOREIGN KEY (`payment_method_id`) REFERENCES `payment_methods` (`id`),
-  ADD CONSTRAINT `user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `order_status_id_fk` FOREIGN KEY (`status_id`) REFERENCES `order_status` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `payment_methods_id_fk` FOREIGN KEY (`payment_method_id`) REFERENCES `payment_methods` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `order_products`
 --
 ALTER TABLE `order_products`
-  ADD CONSTRAINT `order_products_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
-  ADD CONSTRAINT `order_products_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
+  ADD CONSTRAINT `order_products_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `order_products_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `users`
