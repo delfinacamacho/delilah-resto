@@ -196,7 +196,7 @@ server.post('/orders', authMiddleware, async (req, res) => {
             (user_id, payment_method_id)
             VALUES 
             (?, ?)`
-            , {replacements: [paymentMethod, user]});           
+            , {replacements: [user, paymentMethod]});           
 
         const data = await sequelize.query(
             'SELECT MAX(id) FROM orders',
