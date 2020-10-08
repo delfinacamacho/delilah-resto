@@ -269,7 +269,21 @@ paths:
           description: "Order object that needs to be created."
           required: true
           schema:
-              $ref: '#/definitions/Order'
+            type: "array"
+            items:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                payment_method_id:
+                  type: integer
+                product_id:
+                  type: integer
+            example:
+              - user_id: 2
+                payment_method_id: 1
+                product_id: 3
+
       responses:
         '200':
           description: "Order added succesfully."
@@ -355,6 +369,28 @@ paths:
       responses:
         '200':
           description: "Order updated successfully."
+          
+    delete:
+      tags:
+        - Orders
+      summary: "Delete an Order by ID"
+      description: "Finds an Order by ID and deletes it"
+      operationId: "deleteOrderById"
+      parameters:
+      - in: "header"
+        name: "Administrator token"
+        description: "Authentication Token"
+        required: true
+        type: "string"
+      - in: "query"
+        name: "id"
+        description: "ID of order to delete"
+        required: true
+        type: "integer"
+          
+      responses:
+        200:
+          description: "Order deleted successfully."
 
 definitions:
 
@@ -431,9 +467,6 @@ definitions:
         payment_method:
           type: string
           example: cash 
-        product_quantity:
-          type: integer
-          example: 2 
         user_name:
           type: string
           example: Delfina Camacho
