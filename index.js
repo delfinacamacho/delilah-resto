@@ -196,7 +196,7 @@ server.post('/orders', authMiddleware, async (req, res) => {
             (user_id, payment_method_id)
             VALUES 
             (?, ?)`
-            , {replacements: [user, paymentMethod]});           
+            , {replacements: [paymentMethod, user]});           
 
         const data = await sequelize.query(
             'SELECT MAX(id) FROM orders',
@@ -204,7 +204,7 @@ server.post('/orders', authMiddleware, async (req, res) => {
 
         const orderId = Object.values(data[0])[0];
 
-        async function insertProducts(product, i, array) {
+        async function insertProducts(product) {
             await sequelize.query(`
                 INSERT INTO order_products
                 (order_id, product_id)
